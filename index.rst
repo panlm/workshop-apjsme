@@ -13,6 +13,7 @@
   cicd/cicd
   terraform/terraform
   xplay/xplay
+  elk/elk
 
 .. toctree::
   :maxdepth: 2
@@ -55,6 +56,7 @@ Released Labs
 - :ref:`cicd` (Mar 2019)
 - :ref:`terraform` (Oct 2019)
 - :ref:`xplay` (Mar 2020)
+- :ref:`elk` (May 2020)
 
 Working Labs
 ------------
@@ -94,10 +96,26 @@ Public Key
 
 .. _cloudinit:
 
+standard Cloud-Init Script with *Username and Password*
+-------------------------------------------------------
+
+-  for centos image, default username is *centos*, you could setup password for this user with following cloud init script
+
+    .. code-block::
+
+        #cloud-config
+        disable_root: False
+        ssh_pwauth: True
+        password: nutanix/4u
+        chpasswd: { expire: False }
+
+
 standard Cloud-Init Script with *SSH KEY*
 -----------------------------------------
 
-    .. code-block:: language
+-  for centos image, default username is *centos*, you could use ssh key for this user with following cloud init script. **@@{public_key}@@** is a variable in Calm, you should define it in your blueprint.
+
+    .. code-block::
 
         #cloud-config
         disable_root: False
@@ -108,21 +126,6 @@ standard Cloud-Init Script with *SSH KEY*
             ssh-authorized-keys:
               - ssh-rsa @@{public_key}@@
             sudo: ['ALL=(ALL) NOPASSWD:ALL']
-
-
-standard Cloud-Init Script with *Username and Password*
--------------------------------------------------------
-
--  for centos image, default username is *centos*, you could setup password for this user with following cloud init script
-
-    .. code-block:: language
-
-        #cloud-config
-        disable_root: False
-        ssh_pwauth: True
-        password: nutanix/4u
-        chpasswd: { expire: False }
-
 
 
 

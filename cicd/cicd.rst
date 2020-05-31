@@ -10,6 +10,7 @@ Import Blueprints
 +++++++++++++++++
 
 #. Please download 2 blueprints for this lab (if prompt password for blueprints, using `nutanix/4u`): 
+    
     - :download:`CICD-Base.json <https://github.com/panlm/NTNX/raw/master/calm/blueprints/CICD-Base.json>`
     - :download:`CICD-App.json <https://github.com/panlm/NTNX/raw/master/calm/blueprints/CICD-App-noEpoch.json>`
 
