@@ -24,6 +24,10 @@ Take away
 
 - ELK - Elasticsearch, Logstash, and Kibana (In EFK, F means Fluentd). Not like monitoring system, generate alert when threadhold breached. ELK will aggregrate this log for more deep dive and different dimentions analysis, events relevant, and prediction and create alerts or proactive issue solving. 
 
+- HERE is the demo environment
+
+    - Kibana: http://10.55.7.140:5601/
+
 
 Part 1: Collect Nutanix Flow log through PC
 +++++++++++++++++++++++++++++++++++++++++++
