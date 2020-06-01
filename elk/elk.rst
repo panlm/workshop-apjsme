@@ -20,12 +20,12 @@ Take away
 
 - Choose right tools for APM statistics or endpoint to endpoint network performance. If Alert generated, it could trigger a notification, webhook or Calm RestAPI to do operation tasks automatically.
 
-- Calm could integration with lots of 3-party products and solutions, in this case we hug **F5**
+- Calm could integration with lots of 3-party products and solutions, in this case we embrace **F5**
 
-- ELK - Elasticsearch, Logstash, and Kibana (In EFK, F means Fluentbit)
+- ELK - Elasticsearch, Logstash, and Kibana (In EFK, F means Fluentd). Not like monitoring system, generate alert when threadhold breached. ELK will aggregrate this log for more deep dive and different dimentions analysis, events relevant, and prediction and create alerts or proactive issue solving. 
 
 
-Part 1: Collect Nutanix Flow Log through PC
+Part 1: Collect Nutanix Flow log through PC
 +++++++++++++++++++++++++++++++++++++++++++
 
 If you are demoing Nutanix Flow to potential customers or partners, you will be asked how to collect Nutanix Flow logs for audit? You could use this artical to setup ELK first, and show more granularity to them.
@@ -39,7 +39,7 @@ ELK environment
 
 #. Please download blueprint for this lab (if prompt password for blueprints, using `nutanix/4u`): 
     
-    - :download:`EFK.json <https://github.com/panlm/NTNX/raw/master/calm/blueprints/EFK.json>`
+    - :download:`ELK.json <https://github.com/panlm/NTNX/raw/master/calm/blueprints/elk.json>`
 
 #. Launch it
 
@@ -47,9 +47,11 @@ ELK environment
     - using cloud-init to customize it. (refer :ref:`cloudinit`)
     - ensure the credential you have matches the customization in cloudinit
 
-#. After launch successfully, access Kibana with the VM's IP address with port *5601*
+#. After launch successfully, all component you needed are ready. 
 
-    - `http://x.x.x.x:5601`
+    - access Kibana with port **5601** - `http://x.x.x.x:5601`
+    - access Elasticsearch with port **9200** - `http://x.x.x.x:9200`
+    - logstash listens on port **10514** to collect logs
 
 Forward Prism Central logs to ELK
 ---------------------------------
@@ -59,10 +61,12 @@ Forward Prism Central logs to ELK
     - Setting logging server to ELK VM with UDP port `10514`
 
         .. figure:: images/logserver1.png
+            :width: 70 %
 
     - Ensure Flow in data sources settings
 
         .. figure:: images/logserver2.png
+            :width: 70 %
 
 #. Create a security policy
 
@@ -121,7 +125,7 @@ Part 2: Customized session log statistics from F5
 Background
 ----------
 
-Based on transaction's RTT and concurrent to scale in/out VM fleet automatically.
+Based on transaction's APM (RTT or concurrent) to scale in/out VM fleet automatically. F5 could generate alerts and trigger some actions when threadhold breached. Also we need F5 to generate more detail session performance data, including our customizied session data, to our ELK. ELK will aggregrate this log for more deep dive and different dimentions analysis, events relevant, and prediction and create alerts or proactive issue solving. 
 
     .. figure:: images/ppt1.png
 
@@ -130,7 +134,7 @@ HTTP Service Fleet
 
 - You need another blueprint, it will create http service fleet, and add these VMs to F5's pool as members.
 
-    - Download :download:`f5-vm.json <https://github.com/panlm/NTNX/raw/master/calm/blueprints/f5-vm.json>`, and launch it.
+    - Download :download:`elk-f5-vm.json <https://github.com/panlm/NTNX/raw/master/calm/blueprints/elk-f5-vm.json>`, and launch it.
     - You could execute **scaleout** action to expand fleet as you needed.
 
     .. figure:: images/f5-vm-bp.png
@@ -138,7 +142,7 @@ HTTP Service Fleet
 Settings in F5
 --------------
 
-- After blueprint launched, we will see 2 VMs in pool.
+- After blueprint launched, we will see 2 VMs in pool. Currently, we have 500 concurrent http requests to this LB and are balanced to fleet behind it.
 
     .. figure:: images/f5-3.png
 
@@ -153,13 +157,13 @@ Settings in F5
 More in Kibana
 --------------
 
-- More and more logs come in, littery every session should have a log, we have 500 session connect to F5 concurrently, each session will execute 0-5 seconds.
+- More and more logs come in. literally, every session should have a log entity, we have 500 session connect to F5 concurrently, each session will execute 0-8 seconds randomly.
 
     .. figure:: images/kibana-f5-1.png
 
-    - just focus on highlight part, it's a log from F5, log format just like the irules we defined previous
+    - just focus on highlight part, it's a log from F5, log format just like the **irules** we defined previous
 
-- This time, we do not collector logs only, we try to parse log with **logstash** and separate useful field for coming analysis. In this log line, we will capture the last number in last round brackets as **session_ms**, it is the session drution time. 
+- This time, we do not aggregate logs only, we try to parse log with **logstash** and separate useful field for coming analysis. In this log line, we will capture the last number in last round brackets as **session_ms**, it is the session drution time. 
 
 - Goto **Metric** page
 
@@ -209,31 +213,31 @@ Post-credits Scenes
     .. code-block:: 
 
         input {
-        udp {
-            port => 10514
-            type => syslog
-        }
+            udp {
+                port => 10514
+                type => syslog
+            }
         }
 
         filter {
-        if "Session" in [message] {
-            grok {
-                match => {
-                    "message" => "(?<part1>.*]): (?<part2>.*\>): Session from \(%{GREEDYDATA:ipaddress}:%{GREEDYDATA:port}\), time to response\(ms\): \(%{GREEDYDATA:session_ms}\)"
+            if "Session" in [message] {
+                grok {
+                    match => {
+                        "message" => "(?<part1>.*]): (?<part2>.*\>): Session from \(%{GREEDYDATA:ipaddress}:%{GREEDYDATA:port}\), time to response\(ms\): \(%{GREEDYDATA:session_ms}\)"
+                    }
                 }
+            } else {
+                mutate { add_field => { "session_ms" => "-1" } }
             }
-        } else {
-            mutate { add_field => { "session_ms" => "-1" } }
-        }
-        mutate { convert => [ "session_ms", "integer" ] }
+            mutate { convert => [ "session_ms", "integer" ] }
         }
 
         output {
-        elasticsearch { hosts => [ "localhost:9200" ] }
-        stdout { codec => rubydebug }
+            elasticsearch { hosts => [ "localhost:9200" ] }
+            stdout { codec => rubydebug }
         }
 
-- use painless script to do simular, but field created by painless script could not be indexed.
+- use painless script to do simular in kibana, but field created by painless script could not be indexed.
 
     .. code-block:: 
 
@@ -249,6 +253,12 @@ Post-credits Scenes
         } else {
             return -2
         }
+
+- I also installed metricbeat and filebeat on each http VM, it could help you collector and forward application logs to elasticsearch and show statistics in kibana dashboard.
+
+    .. figure:: images/egg1.png
+
+
 
 
 
