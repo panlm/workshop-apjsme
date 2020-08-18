@@ -120,7 +120,7 @@ Forward Prism Central logs to ELK
             - **SPORT=45214** - source port number
             - **DPORT=10514** - destnation port number
 
-#. OK, It's time for you to play with Kibana. It's simple, right? let's go to part 2 for more complex.
+#. OK, It's time for you to play around with Kibana. It's simple, right? let's go to part 2 for more complex.
 
 
 Part 2: Customized session log statistics from F5

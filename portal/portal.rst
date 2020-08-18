@@ -6,8 +6,19 @@
 APJ SME Portal
 --------------
 
-Launch
-++++++
+Launch from Calm
+++++++++++++++++
+
+#. download blueprint from here: :download:`CMP <https://github.com/panlm/NTNX/raw/master/calm/blueprints/CMP-APJSME.json>`
+
+#. import to calm, if you are prompted password, using **nutanix/4u**
+
+#. using default centos image and choose network
+
+#. Launch it. 
+
+Launch from CLI (Optional)
+++++++++++++++++++++++++++
 
 #. Before you start
 
