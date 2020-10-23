@@ -20,7 +20,7 @@ Prepare Era VM
 
 .. note:: If you using Era version 1.0.1.5, you need create network manually and named `DEFAULT_OOB_POSTGRESQL_NETWORK`
 
-.. note:: Verified on  Era version 1.1.1
+.. note:: Verified on  Era version 2.0.0 & Calm 3.1.0 & PC 2020.10
 
 
 Deploying Era
@@ -139,7 +139,7 @@ Prepare Prism Central
 Customized Blueprint
 ++++++++++++++++++++
 
-#. Upload blueprint from HERE: :download:`Integration Demo Blueprint <./integration-noEpoch.json>`
+#. Upload blueprint, you have downloaded in 1st step.
 
 #. Customized blueprint to meet your environment
 
