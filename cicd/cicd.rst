@@ -6,6 +6,8 @@
 Create CI/CD Environment
 ------------------------
 
+.. note:: This guide has been deprecated. Please reference to ``https://github.com/shocnt/se-201-training-20191129``
+
 Import Blueprints
 +++++++++++++++++
 
