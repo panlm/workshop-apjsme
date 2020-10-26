@@ -93,7 +93,7 @@ VM with approval flow
 #. Approve request using admin@nutanix.com
 
     - logout from right top icon
-    - login **admin@nutanix.com** account, using any characters as your password
+    - login **admin@nutanix.com** account, using **admin** as your password
     - **Load** settings
     - goto **Dashboard**
     - goto **VM Pending** page
