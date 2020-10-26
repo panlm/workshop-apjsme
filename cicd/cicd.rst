@@ -6,7 +6,7 @@
 Create CI/CD Environment
 ------------------------
 
-.. note:: This guide has been deprecated. Please reference to ``https://github.com/shocnt/se-201-training-20191129``
+.. note:: This guide is for VM-versioned application, if you are looking for containerized application, please check here: ``https://github.com/shocnt/se-201-training-20191129``
 
 Import Blueprints
 +++++++++++++++++
@@ -113,7 +113,7 @@ Commit Code
     .. code-block:: bash
     
         cd devops/
-        git add * 
+        git add . 
         git commit -m 'initial version'
         git push origin master
 
